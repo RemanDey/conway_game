@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conway's Game of Life</title>
+    <title>Conway's Game of Life - Cellular Automaton Simulator</title>
     <style>
         * {
             margin: 0;
@@ -12,266 +12,404 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Courier New', 'Lucida Console', monospace;
+            background: #0a0e27;
+            color: #e0e0e0;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
 
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            max-width: 900px;
-            width: 100%;
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #1e3a5f;
+            padding-bottom: 20px;
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 0.95em;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        button {
-            padding: 12px 16px;
-            font-size: 0.95em;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-        }
-
-        .btn-success {
-            background: #48bb78;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #38a169;
-        }
-
-        .btn-danger {
-            background: #f56565;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #e53e3e;
-        }
-
-        .btn-warning {
-            background: #ed8936;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #dd6b20;
-        }
-
-        .info-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f0f4ff;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: #333;
-            min-width: 120px;
-        }
-
-        .info-value {
-            color: #667eea;
-            font-weight: 700;
-            font-size: 1.1em;
-        }
-
-        .canvas-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        canvas {
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            background: #f8f9fa;
-            cursor: crosshair;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .speed-control label {
-            font-weight: 600;
-            color: #333;
-            min-width: 100px;
-        }
-
-        .speed-control input[type="range"] {
-            flex: 1;
-            cursor: pointer;
-        }
-
-        .speed-value {
-            font-weight: 700;
-            color: #667eea;
-            min-width: 60px;
-            text-align: right;
-        }
-
-        .rules {
-            margin-top: 25px;
-            padding: 20px;
-            background: #f0f4ff;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .rules h3 {
-            color: #333;
-            margin-bottom: 12px;
-            font-size: 1.1em;
-        }
-
-        .rules ol {
-            margin-left: 20px;
-            color: #555;
-            line-height: 1.8;
-        }
-
-        .rules li {
+            font-size: 2.2em;
+            color: #4a9eff;
+            letter-spacing: 2px;
+            font-weight: normal;
             margin-bottom: 8px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
+        .subtitle {
+            color: #888;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .canvas-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .canvas-container {
+            background: #0f1428;
+            border: 2px solid #1e3a5f;
+            border-radius: 2px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            background: #000;
+            border: 1px solid #2a4a7c;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .control-panel {
+            background: #0f1428;
+            border: 2px solid #1e3a5f;
+            border-radius: 2px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-label {
+            color: #4a9eff;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .button-group.full {
+            grid-template-columns: 1fr;
+        }
+
+        button {
+            padding: 10px 12px;
+            background: #1a2a4a;
+            color: #4a9eff;
+            border: 1px solid #2a4a7c;
+            border-radius: 2px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #2a3a5a;
+            border-color: #4a9eff;
+            color: #6ab3ff;
+        }
+
+        button:active {
+            background: #1a2a4a;
+            border-color: #2a4a7c;
+        }
+
+        button.active {
+            background: #2a5a9a;
+            border-color: #4a9eff;
+            color: #fff;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slider-value {
+            color: #4a9eff;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: #1a2a4a;
+            border: none;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #4a9eff;
+            cursor: pointer;
+            border-radius: 1px;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #4a9eff;
+            cursor: pointer;
+            border: none;
+            border-radius: 1px;
+        }
+
+        .statistics-panel {
+            background: #0f1428;
+            border: 2px solid #1e3a5f;
+            border-radius: 2px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.75em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            color: #4a9eff;
+            font-size: 1.8em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .divider {
+            border-top: 1px solid #1e3a5f;
+        }
+
+        .rules-section {
+            background: #0f1428;
+            border: 2px solid #1e3a5f;
+            border-radius: 2px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .rules-title {
+            color: #4a9eff;
+            font-size: 1em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .rules-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .rule-item {
+            background: #0a0e27;
+            border-left: 2px solid #4a9eff;
+            padding: 15px;
+            border-radius: 2px;
+        }
+
+        .rule-number {
+            color: #4a9eff;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .rule-text {
+            color: #b0b0b0;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #0a0e27;
+            border: 1px solid #1e3a5f;
+            border-radius: 2px;
+            padding: 12px;
+            font-size: 0.85em;
+            color: #888;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+
+        .info-box strong {
+            color: #4a9eff;
+        }
+
+        @media (max-width: 900px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .rules-list {
+                grid-template-columns: 1fr;
             }
 
             h1 {
                 font-size: 1.8em;
             }
 
-            .controls {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .info-section {
+            .button-group {
                 grid-template-columns: 1fr;
             }
+        }
 
-            .speed-control {
-                flex-direction: column;
-                align-items: flex-start;
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .control-panel {
+                padding: 15px;
+            }
+
+            .statistics-panel {
+                padding: 15px;
+            }
+
+            canvas {
+                max-width: 100%;
+                height: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🧬 Conway's Game of Life</h1>
-        <p class="subtitle">Draw a pattern and watch it evolve according to simple rules</p>
+    <div class="main-container">
+        <header>
+            <h1>CONWAY'S GAME OF LIFE</h1>
+            <div class="subtitle">Cellular Automaton Simulator</div>
+        </header>
 
-        <div class="info-section">
-            <div class="info-item">
-                <span class="info-label">Generation:</span>
-                <span class="info-value" id="generation">0</span>
+        <div class="content-wrapper">
+            <div class="canvas-section">
+                <div class="canvas-container">
+                    <canvas id="gameCanvas" width="700" height="700"></canvas>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Living Cells:</span>
-                <span class="info-value" id="cellCount">0</span>
+
+            <div class="statistics-panel">
+                <div class="stat-item">
+                    <div class="stat-label">Generation</div>
+                    <div class="stat-value" id="generation">0</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Living Cells</div>
+                    <div class="stat-value" id="cellCount">0</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="control-section">
+                    <div class="control-label">Simulation Control</div>
+                    <div class="button-group full">
+                        <button id="startBtn">Start</button>
+                        <button id="stopBtn">Stop</button>
+                    </div>
+                    <div class="button-group full">
+                        <button id="stepBtn">Step</button>
+                        <button id="clearBtn">Clear</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="control-label">Pattern</div>
+                    <div class="button-group full">
+                        <button id="randomBtn">Random</button>
+                        <button id="gliderBtn">Glider</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <div class="control-label">Speed</div>
+                            <div class="slider-value"><span id="speedValue">300</span>ms</div>
+                        </div>
+                        <input type="range" id="speedSlider" min="50" max="1000" value="300" step="50">
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="controls">
-            <button class="btn-primary" id="startBtn">▶ Start</button>
-            <button class="btn-danger" id="stopBtn">⏸ Stop</button>
-            <button class="btn-warning" id="clearBtn">🗑 Clear</button>
-            <button class="btn-primary" id="randomBtn">🎲 Random</button>
-            <button class="btn-primary" id="gliderBtn">✈ Glider</button>
-        </div>
-
-        <div class="speed-control">
-            <label for="speedSlider">Simulation Speed:</label>
-            <input type="range" id="speedSlider" min="50" max="1000" value="300" step="50">
-            <span class="speed-value"><span id="speedValue">300</span>ms</span>
-        </div>
-
-        <div class="canvas-container">
-            <canvas id="gameCanvas" width="600" height="600"></canvas>
-        </div>
-
-        <div class="rules">
-            <h3>📋 Rules of Conway's Game of Life</h3>
-            <ol>
-                <li><strong>Underpopulation:</strong> Any live cell with fewer than 2 live neighbors dies.</li>
-                <li><strong>Survival:</strong> Any live cell with 2 or 3 live neighbors survives.</li>
-                <li><strong>Overpopulation:</strong> Any live cell with more than 3 live neighbors dies.</li>
-                <li><strong>Reproduction:</strong> Any dead cell with exactly 3 live neighbors becomes alive.</li>
-            </ol>
+        <div class="rules-section">
+            <div class="rules-title">Cellular Automaton Rules</div>
+            <div class="rules-list">
+                <div class="rule-item">
+                    <div class="rule-number">Rule 1: Underpopulation</div>
+                    <div class="rule-text">Any live cell with fewer than two live neighbors dies due to underpopulation.</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-number">Rule 2: Survival</div>
+                    <div class="rule-text">Any live cell with two or three live neighbors survives to the next generation.</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-number">Rule 3: Overpopulation</div>
+                    <div class="rule-text">Any live cell with more than three live neighbors dies due to overpopulation.</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-number">Rule 4: Reproduction</div>
+                    <div class="rule-text">Any dead cell with exactly three live neighbors becomes alive through reproduction.</div>
+                </div>
+            </div>
+            <div class="info-box">
+                <strong>Interaction Guide:</strong> Click or drag on the grid to place cells. Use the control panel to start the simulation, adjust speed, or load predefined patterns. The simulation wraps at edges (toroidal topology).
+            </div>
         </div>
     </div>
 
@@ -288,19 +426,17 @@
         let generation = 0;
         let speed = 300;
 
-        // Initialize grid
         function createEmptyGrid() {
             return Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(false));
         }
 
-        // Draw the grid and cells
         function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#f8f9fa';
+            // Background
+            ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw grid lines
-            ctx.strokeStyle = '#e0e0e0';
+            // Grid lines
+            ctx.strokeStyle = '#1a2a4a';
             ctx.lineWidth = 0.5;
 
             for (let i = 0; i <= GRID_WIDTH; i++) {
@@ -317,18 +453,17 @@
                 ctx.stroke();
             }
 
-            // Draw living cells
-            ctx.fillStyle = '#667eea';
+            // Living cells
+            ctx.fillStyle = '#4a9eff';
             for (let y = 0; y < GRID_HEIGHT; y++) {
                 for (let x = 0; x < GRID_WIDTH; x++) {
                     if (grid[y][x]) {
-                        ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                        ctx.fillRect(x * CELL_SIZE + 1, y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
                     }
                 }
             }
         }
 
-        // Count live neighbors
         function countNeighbors(x, y) {
             let count = 0;
             for (let dy = -1; dy <= 1; dy++) {
@@ -342,7 +477,6 @@
             return count;
         }
 
-        // Apply Conway's Game of Life rules
         function nextGeneration() {
             const newGrid = createEmptyGrid();
 
@@ -351,13 +485,12 @@
                     const neighbors = countNeighbors(x, y);
                     const isAlive = grid[y][x];
 
-                    // Apply rules
                     if (isAlive && (neighbors === 2 || neighbors === 3)) {
-                        newGrid[y][x] = true; // Survives
+                        newGrid[y][x] = true;
                     } else if (!isAlive && neighbors === 3) {
-                        newGrid[y][x] = true; // Birth
+                        newGrid[y][x] = true;
                     } else {
-                        newGrid[y][x] = false; // Dies or stays dead
+                        newGrid[y][x] = false;
                     }
                 }
             }
@@ -367,14 +500,12 @@
             updateInfo();
         }
 
-        // Update generation and cell count
         function updateInfo() {
             document.getElementById('generation').textContent = generation;
             const cellCount = grid.flat().filter(cell => cell).length;
             document.getElementById('cellCount').textContent = cellCount;
         }
 
-        // Simulation loop
         function simulate() {
             if (isRunning) {
                 nextGeneration();
@@ -383,7 +514,6 @@
             }
         }
 
-        // Canvas click handler for drawing
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
@@ -396,90 +526,6 @@
             }
         });
 
-        // Canvas drag to draw
         let isDrawing = false;
         canvas.addEventListener('mousedown', () => {
-            isDrawing = true;
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isDrawing) return;
-
-            const rect = canvas.getBoundingClientRect();
-            const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
-            const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
-
-            if (x >= 0 && x < GRID_WIDTH && y >= 0 && y < GRID_HEIGHT) {
-                grid[y][x] = true;
-                draw();
-            }
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            isDrawing = false;
-            updateInfo();
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            isDrawing = false;
-        });
-
-        // Button handlers
-        document.getElementById('startBtn').addEventListener('click', () => {
-            isRunning = true;
-            simulate();
-        });
-
-        document.getElementById('stopBtn').addEventListener('click', () => {
-            isRunning = false;
-        });
-
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            grid = createEmptyGrid();
-            generation = 0;
-            isRunning = false;
-            updateInfo();
-            draw();
-        });
-
-        document.getElementById('randomBtn').addEventListener('click', () => {
-            for (let y = 0; y < GRID_HEIGHT; y++) {
-                for (let x = 0; x < GRID_WIDTH; x++) {
-                    grid[y][x] = Math.random() < 0.3;
-                }
-            }
-            generation = 0;
-            isRunning = false;
-            updateInfo();
-            draw();
-        });
-
-        document.getElementById('gliderBtn').addEventListener('click', () => {
-            grid = createEmptyGrid();
-            // Classic glider pattern
-            const glider = [
-                [false, true, false],
-                [false, false, true],
-                [true, true, true]
-            ];
-            for (let y = 0; y < 3; y++) {
-                for (let x = 0; x < 3; x++) {
-                    grid[10 + y][10 + x] = glider[y][x];
-                }
-            }
-            generation = 0;
-            isRunning = false;
-            updateInfo();
-            draw();
-        });
-
-        document.getElementById('speedSlider').addEventListener('input', (e) => {
-            speed = parseInt(e.target.value);
-            document.getElementById('speedValue').textContent = speed;
-        });
-
-        // Initial draw
-        draw();
-    </script>
-</body>
-</html>
+            isDraw
