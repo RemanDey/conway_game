@@ -418,13 +418,14 @@
         const ctx = canvas.getContext('2d');
 
         const CELL_SIZE = 10;
-        const GRID_WIDTH = canvas.width / CELL_SIZE;
-        const GRID_HEIGHT = canvas.height / CELL_SIZE;
+        const GRID_WIDTH = Math.floor(canvas.width / CELL_SIZE);
+        const GRID_HEIGHT = Math.floor(canvas.height / CELL_SIZE);
 
         let grid = createEmptyGrid();
         let isRunning = false;
         let generation = 0;
         let speed = 300;
+        let simulationTimeout = null;
 
         function createEmptyGrid() {
             return Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(false));
@@ -498,6 +499,7 @@
             grid = newGrid;
             generation++;
             updateInfo();
+            draw();
         }
 
         function updateInfo() {
@@ -509,11 +511,11 @@
         function simulate() {
             if (isRunning) {
                 nextGeneration();
-                draw();
-                setTimeout(simulate, speed);
+                simulationTimeout = setTimeout(simulate, speed);
             }
         }
 
+        // Canvas interaction
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
@@ -526,6 +528,4 @@
             }
         });
 
-        let isDrawing = false;
-        canvas.addEventListener('mousedown', () => {
-            isDraw
+        
