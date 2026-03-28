@@ -1,531 +1,265 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conway's Game of Life - Cellular Automaton Simulator</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game of Life</title>
 
-        body {
-            font-family: 'Courier New', 'Lucida Console', monospace;
-            background: #0a0e27;
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 20px;
-        }
+<style>
+body {
+    font-family: monospace;
+    background: #0a0e27;
+    color: #e0e0e0;
+    text-align: center;
+}
 
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+canvas {
+    background: #000;
+    border: 1px solid #2a4a7c;
+    cursor: crosshair;
+}
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #1e3a5f;
-            padding-bottom: 20px;
-        }
+button {
+    margin: 5px;
+    padding: 8px;
+    background: #1a2a4a;
+    color: #4a9eff;
+    border: 1px solid #2a4a7c;
+    cursor: pointer;
+}
 
-        h1 {
-            font-size: 2.2em;
-            color: #4a9eff;
-            letter-spacing: 2px;
-            font-weight: normal;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: #888;
-            font-size: 0.9em;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .canvas-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .canvas-container {
-            background: #0f1428;
-            border: 2px solid #1e3a5f;
-            border-radius: 2px;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        canvas {
-            background: #000;
-            border: 1px solid #2a4a7c;
-            display: block;
-            cursor: crosshair;
-        }
-
-        .control-panel {
-            background: #0f1428;
-            border: 2px solid #1e3a5f;
-            border-radius: 2px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .control-section {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .control-label {
-            color: #4a9eff;
-            font-size: 0.85em;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .button-group.full {
-            grid-template-columns: 1fr;
-        }
-
-        button {
-            padding: 10px 12px;
-            background: #1a2a4a;
-            color: #4a9eff;
-            border: 1px solid #2a4a7c;
-            border-radius: 2px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8em;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background: #2a3a5a;
-            border-color: #4a9eff;
-            color: #6ab3ff;
-        }
-
-        button:active {
-            background: #1a2a4a;
-            border-color: #2a4a7c;
-        }
-
-        button.active {
-            background: #2a5a9a;
-            border-color: #4a9eff;
-            color: #fff;
-        }
-
-        .slider-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .slider-value {
-            color: #4a9eff;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 4px;
-            background: #1a2a4a;
-            border: none;
-            border-radius: 2px;
-            outline: none;
-            -webkit-appearance: none;
-            cursor: pointer;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            background: #4a9eff;
-            cursor: pointer;
-            border-radius: 1px;
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            background: #4a9eff;
-            cursor: pointer;
-            border: none;
-            border-radius: 1px;
-        }
-
-        .statistics-panel {
-            background: #0f1428;
-            border: 2px solid #1e3a5f;
-            border-radius: 2px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .stat-label {
-            color: #888;
-            font-size: 0.75em;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .stat-value {
-            color: #4a9eff;
-            font-size: 1.8em;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-        }
-
-        .divider {
-            border-top: 1px solid #1e3a5f;
-        }
-
-        .rules-section {
-            background: #0f1428;
-            border: 2px solid #1e3a5f;
-            border-radius: 2px;
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-
-        .rules-title {
-            color: #4a9eff;
-            font-size: 1em;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .rules-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .rule-item {
-            background: #0a0e27;
-            border-left: 2px solid #4a9eff;
-            padding: 15px;
-            border-radius: 2px;
-        }
-
-        .rule-number {
-            color: #4a9eff;
-            font-weight: bold;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .rule-text {
-            color: #b0b0b0;
-            font-size: 0.9em;
-            line-height: 1.6;
-        }
-
-        .info-box {
-            background: #0a0e27;
-            border: 1px solid #1e3a5f;
-            border-radius: 2px;
-            padding: 12px;
-            font-size: 0.85em;
-            color: #888;
-            line-height: 1.5;
-            margin-top: 15px;
-        }
-
-        .info-box strong {
-            color: #4a9eff;
-        }
-
-        @media (max-width: 900px) {
-            .content-wrapper {
-                grid-template-columns: 1fr;
-            }
-
-            .rules-list {
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .button-group {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 1.5em;
-            }
-
-            .control-panel {
-                padding: 15px;
-            }
-
-            .statistics-panel {
-                padding: 15px;
-            }
-
-            canvas {
-                max-width: 100%;
-                height: auto;
-            }
-        }
-    </style>
+input {
+    margin-top: 10px;
+}
+</style>
 </head>
+
 <body>
-    <div class="main-container">
-        <header>
-            <h1>CONWAY'S GAME OF LIFE</h1>
-            <div class="subtitle">Cellular Automaton Simulator</div>
-        </header>
 
-        <div class="content-wrapper">
-            <div class="canvas-section">
-                <div class="canvas-container">
-                    <canvas id="gameCanvas" width="700" height="700"></canvas>
-                </div>
-            </div>
+<h2>Conway's Game of Life</h2>
 
-            <div class="statistics-panel">
-                <div class="stat-item">
-                    <div class="stat-label">Generation</div>
-                    <div class="stat-value" id="generation">0</div>
-                </div>
+<canvas id="canvas" width="600" height="600"></canvas>
 
-                <div class="divider"></div>
+<div>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+    <button id="step">Step</button>
+    <button id="clear">Clear</button>
+    <button id="random">Random</button>
+    <button id="glider">Glider</button>
+</div>
 
-                <div class="stat-item">
-                    <div class="stat-label">Living Cells</div>
-                    <div class="stat-value" id="cellCount">0</div>
-                </div>
+<div>
+    Speed: <span id="speedVal">200</span> ms
+    <br>
+    <input type="range" id="speed" min="50" max="1000" step="50" value="200">
+</div>
 
-                <div class="divider"></div>
+<p>Generation: <span id="gen">0</span> | Cells: <span id="count">0</span></p>
 
-                <div class="control-section">
-                    <div class="control-label">Simulation Control</div>
-                    <div class="button-group full">
-                        <button id="startBtn">Start</button>
-                        <button id="stopBtn">Stop</button>
-                    </div>
-                    <div class="button-group full">
-                        <button id="stepBtn">Step</button>
-                        <button id="clearBtn">Clear</button>
-                    </div>
-                </div>
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-                <div class="control-section">
-                    <div class="control-label">Pattern</div>
-                    <div class="button-group full">
-                        <button id="randomBtn">Random</button>
-                        <button id="gliderBtn">Glider</button>
-                    </div>
-                </div>
+const SIZE = 10;
+const COLS = canvas.width / SIZE;
+const ROWS = canvas.height / SIZE;
 
-                <div class="control-section">
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <div class="control-label">Speed</div>
-                            <div class="slider-value"><span id="speedValue">300</span>ms</div>
-                        </div>
-                        <input type="range" id="speedSlider" min="50" max="1000" value="300" step="50">
-                    </div>
-                </div>
-            </div>
-        </div>
+let grid = createGrid();
+let running = false;
+let generation = 0;
+let speed = 200;
+let timeout;
 
-        <div class="rules-section">
-            <div class="rules-title">Cellular Automaton Rules</div>
-            <div class="rules-list">
-                <div class="rule-item">
-                    <div class="rule-number">Rule 1: Underpopulation</div>
-                    <div class="rule-text">Any live cell with fewer than two live neighbors dies due to underpopulation.</div>
-                </div>
-                <div class="rule-item">
-                    <div class="rule-number">Rule 2: Survival</div>
-                    <div class="rule-text">Any live cell with two or three live neighbors survives to the next generation.</div>
-                </div>
-                <div class="rule-item">
-                    <div class="rule-number">Rule 3: Overpopulation</div>
-                    <div class="rule-text">Any live cell with more than three live neighbors dies due to overpopulation.</div>
-                </div>
-                <div class="rule-item">
-                    <div class="rule-number">Rule 4: Reproduction</div>
-                    <div class="rule-text">Any dead cell with exactly three live neighbors becomes alive through reproduction.</div>
-                </div>
-            </div>
-            <div class="info-box">
-                <strong>Interaction Guide:</strong> Click or drag on the grid to place cells. Use the control panel to start the simulation, adjust speed, or load predefined patterns. The simulation wraps at edges (toroidal topology).
-            </div>
-        </div>
-    </div>
+// Create grid
+function createGrid() {
+    return Array.from({ length: ROWS }, () =>
+        Array.from({ length: COLS }, () => false)
+    );
+}
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+// Draw
+function draw() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        const CELL_SIZE = 10;
-        const GRID_WIDTH = Math.floor(canvas.width / CELL_SIZE);
-        const GRID_HEIGHT = Math.floor(canvas.height / CELL_SIZE);
+    ctx.fillStyle = "#4a9eff";
 
-        let grid = createEmptyGrid();
-        let isRunning = false;
-        let generation = 0;
-        let speed = 300;
-        let simulationTimeout = null;
-
-        function createEmptyGrid() {
-            return Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(false));
-        }
-
-        function draw() {
-            // Background
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Grid lines
-            ctx.strokeStyle = '#1a2a4a';
-            ctx.lineWidth = 0.5;
-
-            for (let i = 0; i <= GRID_WIDTH; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * CELL_SIZE, 0);
-                ctx.lineTo(i * CELL_SIZE, canvas.height);
-                ctx.stroke();
-            }
-
-            for (let i = 0; i <= GRID_HEIGHT; i++) {
-                ctx.beginPath();
-                ctx.moveTo(0, i * CELL_SIZE);
-                ctx.lineTo(canvas.width, i * CELL_SIZE);
-                ctx.stroke();
-            }
-
-            // Living cells
-            ctx.fillStyle = '#4a9eff';
-            for (let y = 0; y < GRID_HEIGHT; y++) {
-                for (let x = 0; x < GRID_WIDTH; x++) {
-                    if (grid[y][x]) {
-                        ctx.fillRect(x * CELL_SIZE + 1, y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
-                    }
-                }
+    for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+            if (grid[y][x]) {
+                ctx.fillRect(x * SIZE, y * SIZE, SIZE - 1, SIZE - 1);
             }
         }
+    }
+}
 
-        function countNeighbors(x, y) {
-            let count = 0;
-            for (let dy = -1; dy <= 1; dy++) {
-                for (let dx = -1; dx <= 1; dx++) {
-                    if (dx === 0 && dy === 0) continue;
-                    const ny = (y + dy + GRID_HEIGHT) % GRID_HEIGHT;
-                    const nx = (x + dx + GRID_WIDTH) % GRID_WIDTH;
-                    if (grid[ny][nx]) count++;
-                }
-            }
-            return count;
+// Count neighbors
+function neighbors(x, y) {
+    let count = 0;
+
+    for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+
+            let nx = (x + dx + COLS) % COLS;
+            let ny = (y + dy + ROWS) % ROWS;
+
+            if (grid[ny][nx]) count++;
         }
+    }
 
-        function nextGeneration() {
-            const newGrid = createEmptyGrid();
+    return count;
+}
 
-            for (let y = 0; y < GRID_HEIGHT; y++) {
-                for (let x = 0; x < GRID_WIDTH; x++) {
-                    const neighbors = countNeighbors(x, y);
-                    const isAlive = grid[y][x];
+// Next generation
+function next() {
+    let newGrid = createGrid();
 
-                    if (isAlive && (neighbors === 2 || neighbors === 3)) {
-                        newGrid[y][x] = true;
-                    } else if (!isAlive && neighbors === 3) {
-                        newGrid[y][x] = true;
-                    } else {
-                        newGrid[y][x] = false;
-                    }
-                }
-            }
+    for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+            let n = neighbors(x, y);
 
-            grid = newGrid;
-            generation++;
-            updateInfo();
-            draw();
-        }
-
-        function updateInfo() {
-            document.getElementById('generation').textContent = generation;
-            const cellCount = grid.flat().filter(cell => cell).length;
-            document.getElementById('cellCount').textContent = cellCount;
-        }
-
-        function simulate() {
-            if (isRunning) {
-                nextGeneration();
-                simulationTimeout = setTimeout(simulate, speed);
+            if (grid[y][x] && (n === 2 || n === 3)) {
+                newGrid[y][x] = true;
+            } else if (!grid[y][x] && n === 3) {
+                newGrid[y][x] = true;
             }
         }
+    }
 
-        // Canvas interaction
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
-            const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
+    grid = newGrid;
+    generation++;
+    updateStats();
+    draw();
+}
 
-            if (x >= 0 && x < GRID_WIDTH && y >= 0 && y < GRID_HEIGHT) {
-                grid[y][x] = !grid[y][x];
-                updateInfo();
-                draw();
-            }
-        });
+// Simulation loop
+function loop() {
+    if (!running) return;
+    next();
+    timeout = setTimeout(loop, speed);
+}
 
-        
+// Stats
+function updateStats() {
+    document.getElementById("gen").textContent = generation;
+    document.getElementById("count").textContent =
+        grid.flat().filter(c => c).length;
+}
+
+// Mouse draw
+let drawing = false;
+
+canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mouseup", () => drawing = false);
+canvas.addEventListener("mouseleave", () => drawing = false);
+
+canvas.addEventListener("mousemove", (e) => {
+    if (!drawing) return;
+
+    const rect = canvas.getBoundingClientRect();
+    let x = Math.floor((e.clientX - rect.left) / SIZE);
+    let y = Math.floor((e.clientY - rect.top) / SIZE);
+
+    grid[y][x] = true;
+    draw();
+    updateStats();
+});
+
+// Click toggle
+canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    let x = Math.floor((e.clientX - rect.left) / SIZE);
+    let y = Math.floor((e.clientY - rect.top) / SIZE);
+
+    grid[y][x] = !grid[y][x];
+    draw();
+    updateStats();
+});
+
+// Buttons
+document.getElementById("start").onclick = () => {
+    if (!running) {
+        running = true;
+        loop();
+    }
+};
+
+document.getElementById("stop").onclick = () => {
+    running = false;
+    clearTimeout(timeout);
+};
+
+document.getElementById("step").onclick = () => {
+    if (!running) next();
+};
+
+document.getElementById("clear").onclick = () => {
+    grid = createGrid();
+    generation = 0;
+    draw();
+    updateStats();
+};
+
+document.getElementById("random").onclick = () => {
+    grid = grid.map(row => row.map(() => Math.random() > 0.7));
+    generation = 0;
+    draw();
+    updateStats();
+};
+
+document.getElementById("glider").onclick = () => {
+    grid = createGrid();
+
+    let x = 10, y = 10;
+    grid[y][x+1] = true;
+    grid[y+1][x+2] = true;
+    grid[y+2][x] = true;
+    grid[y+2][x+1] = true;
+    grid[y+2][x+2] = true;
+
+    generation = 0;
+    draw();
+    updateStats();
+};
+
+// Speed control
+const slider = document.getElementById("speed");
+const speedVal = document.getElementById("speedVal");
+
+slider.oninput = () => {
+    speed = parseInt(slider.value);
+    speedVal.textContent = speed;
+};
+
+// Init
+draw();
+updateStats();
+
+</script>
+
+</body>
+</html>
+```
+
+---
+
+# ✔ What you now have
+
+* Fully interactive simulator
+* Smooth controls
+* Correct cellular automaton behavior
+* Ready for GitHub / competitions
+
+---
+
+If you want next-level upgrades, I can add:
+
+* Pattern library (Gosper gun, pulsar)
+* Zoom + pan
+* Save/load patterns
+* GPU acceleration (WebGL)
+
+Just tell me 👍
